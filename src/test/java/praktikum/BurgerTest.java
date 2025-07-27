@@ -6,8 +6,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.List;
-
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
@@ -47,9 +45,14 @@ public class BurgerTest {
     }
 
     @Test
-    public void testAddIngredient() {
+    public void testAddIngredientIncreasesListSize() {
         burger.addIngredient(filling);
         assertEquals(1, burger.ingredients.size());
+    }
+
+    @Test
+    public void testAddIngredientStoresCorrectIngredient() {
+        burger.addIngredient(filling);
         assertEquals(filling, burger.ingredients.get(0));
     }
 
@@ -61,14 +64,21 @@ public class BurgerTest {
     }
 
     @Test
-    public void testMoveIngredient() {
+    public void testMoveIngredientChangesFirstElement() {
         burger.addIngredient(sauce);
         burger.addIngredient(filling);
         burger.moveIngredient(0, 1);
 
-        List<Ingredient> ingredients = burger.ingredients;
-        assertEquals(filling, ingredients.get(0));
-        assertEquals(sauce, ingredients.get(1));
+        assertEquals(filling, burger.ingredients.get(0));
+    }
+
+    @Test
+    public void testMoveIngredientChangesSecondElement() {
+        burger.addIngredient(sauce);
+        burger.addIngredient(filling);
+        burger.moveIngredient(0, 1);
+
+        assertEquals(sauce, burger.ingredients.get(1));
     }
 
     @Test
@@ -87,12 +97,20 @@ public class BurgerTest {
         burger.addIngredient(sauce);
         burger.addIngredient(filling);
 
-        String receipt = burger.getReceipt();
+        String expectedReceipt = String.format(
+               "(==== %s ====)%n" +
+               "= %s %s =%n" +
+               "= %s %s =%n" +
+               "(==== %s ====)%n%n" +
+               "Price: %f%n",
+               "black bun",
+               "sauce", "chili sauce",
+               "filling", "sausage",
+                "black bun",
+                100f * 2 + 300f + 300f
+        );
 
-        assertTrue(receipt.contains("(==== black bun ====)"));
-        assertTrue(receipt.contains("= sauce chili sauce ="));
-        assertTrue(receipt.contains("= filling sausage ="));
-        assertTrue(receipt.contains("Price:"));
+        String actualReceipt = burger.getReceipt();
+        assertEquals(expectedReceipt, actualReceipt);
     }
-
 }
